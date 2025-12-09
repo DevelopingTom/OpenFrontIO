@@ -5,6 +5,7 @@ import {
   UserMeResponse,
   UserMeResponseSchema,
 } from "../core/ApiSchemas";
+import { AnalyticsRecord, AnalyticsRecordSchema } from "../core/Schemas";
 import { getAuthHeader, logOut, userAuth } from "./Auth";
 
 export async function fetchPlayerById(
@@ -130,4 +131,43 @@ export function getAudience() {
   const { hostname } = new URL(window.location.href);
   const domainname = hostname.split(".").slice(-2).join(".");
   return domainname;
+}
+
+export async function fetchGameById(
+  gameId: string,
+): Promise<AnalyticsRecord | false> {
+  try {
+    const userAuthResult = await userAuth();
+    if (!userAuthResult) return false;
+    const { jwt } = userAuthResult;
+    const url = `${getApiBase()}/public/game/${gameId}/?turns=false`;
+
+    const res = await fetch(url, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${jwt}`,
+      },
+    });
+
+    if (res.status !== 200) {
+      console.warn(
+        "fetchGameById: unexpected status",
+        res.status,
+        res.statusText,
+      );
+      return false;
+    }
+
+    const json = await res.json();
+    const parsed = AnalyticsRecordSchema.safeParse(json);
+    if (!parsed.success) {
+      console.warn("fetchGameById: Zod validation failed", parsed.error);
+      return false;
+    }
+
+    return parsed.data;
+  } catch (err) {
+    console.warn("fetchGameById: request failed", err);
+    return false;
+  }
 }
