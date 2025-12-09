@@ -100,6 +100,9 @@ export enum GameMapType {
   Montreal = "Montreal",
   Achiran = "Achiran",
   BaikalNukeWars = "Baikal (Nuke Wars)",
+  FourIslands = "Four Islands",
+  GulfOfStLawrence = "Gulf of St. Lawrence",
+  Lisbon = "Lisbon",
 }
 
 export type GameMapName = keyof typeof GameMapType;
@@ -133,6 +136,8 @@ export const mapCategories: Record<string, GameMapType[]> = {
     GameMapType.Italia,
     GameMapType.Japan,
     GameMapType.Montreal,
+    GameMapType.GulfOfStLawrence,
+    GameMapType.Lisbon,
   ],
   fantasy: [
     GameMapType.Pangaea,
@@ -141,6 +146,7 @@ export const mapCategories: Record<string, GameMapType[]> = {
     GameMapType.DeglaciatedAntarctica,
     GameMapType.Achiran,
     GameMapType.BaikalNukeWars,
+    GameMapType.FourIslands,
   ],
 };
 
@@ -191,7 +197,6 @@ export enum UnitType {
   City = "City",
   MIRV = "MIRV",
   MIRVWarhead = "MIRV Warhead",
-  Construction = "Construction",
   Train = "Train",
   Factory = "Factory",
 }
@@ -203,7 +208,6 @@ export enum TrainType {
 
 const _structureTypes: ReadonlySet<UnitType> = new Set([
   UnitType.City,
-  UnitType.Construction,
   UnitType.DefensePost,
   UnitType.SAMLauncher,
   UnitType.MissileSilo,
@@ -277,8 +281,6 @@ export interface UnitParamsMap {
   [UnitType.MIRVWarhead]: {
     targetTile?: number;
   };
-
-  [UnitType.Construction]: Record<string, never>;
 }
 
 // Type helper to get params type for a specific unit type
@@ -303,7 +305,6 @@ export enum Relation {
 export class Nation {
   constructor(
     public readonly spawnCell: Cell,
-    public readonly strength: number,
     public readonly playerInfo: PlayerInfo,
   ) {}
 }
@@ -411,7 +412,7 @@ export class PlayerInfo {
     public readonly clientID: ClientID | null,
     // TODO: make player id the small id
     public readonly id: PlayerID,
-    public readonly nation?: Nation | null,
+    public readonly nationStrength?: number,
   ) {
     this.clan = getClanTag(name);
   }
@@ -494,9 +495,9 @@ export interface Unit {
   setSafeFromPirates(): void; // Only for trade ships
   isSafeFromPirates(): boolean; // Only for trade ships
 
-  // Construction
-  constructionType(): UnitType | null;
-  setConstructionType(type: UnitType): void;
+  // Construction phase on structures
+  isUnderConstruction(): boolean;
+  setUnderConstruction(underConstruction: boolean): void;
 
   // Upgradable Structures
   level(): number;
@@ -701,12 +702,14 @@ export interface Game extends GameMap {
     searchRange: number,
     type: UnitType,
     playerId?: PlayerID,
+    includeUnderConstruction?: boolean,
   ): boolean;
   nearbyUnits(
     tile: TileRef,
     searchRange: number,
     types: UnitType | UnitType[],
     predicate?: UnitPredicate,
+    includeUnderConstruction?: boolean,
   ): Array<{ unit: Unit; distSquared: number }>;
 
   addExecution(...exec: Execution[]): void;

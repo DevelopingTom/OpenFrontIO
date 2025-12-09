@@ -230,7 +230,10 @@
     "pluto": "Pluto",
     "montreal": "Montreal",
     "achiran": "Achiran",
-    "baikalnukewars": "Baikal (Nuke Wars)"
+    "baikalnukewars": "Baikal (Nuke Wars)",
+    "fourislands": "Four Islands",
+    "gulfofstlawrence": "Gulf of St. Lawrence",
+    "lisbon": "Lisbon"
   },
   "map_categories": {
     "continental": "Continental",
@@ -294,10 +297,16 @@
     "enables_title": "Enable Settings",
     "player": "Player",
     "players": "Players",
+    "nation_players": "Nations",
+    "nation_player": "Nation",
     "waiting": "Waiting for players...",
     "random_spawn": "Random spawn",
     "start": "Start Game",
-    "host_badge": "Host"
+    "host_badge": "Host",
+    "assigned_teams": "Assigned Teams",
+    "empty_teams": "Empty Teams",
+    "empty_team": "Empty",
+    "remove_player": "Remove {username}"
   },
   "team_colors": {
     "red": "Red",
@@ -349,7 +358,7 @@
     "emojis_label": "Emojis",
     "emojis_desc": "Toggle whether emojis are shown in game",
     "alert_frame_label": "Alert Frame",
-    "alert_frame_desc": "Toggle the alert frame. When enabled, the frame will be displayed when you are betrayed.",
+    "alert_frame_desc": "Toggle the alert frame. When enabled, the frame will be displayed when you are betrayed or attacked over land.",
     "special_effects_label": "Special effects",
     "special_effects_desc": "Toggle special effects. Deactivate to improve performances",
     "structure_sprites_label": "Structure Sprites",
@@ -593,6 +602,7 @@
   },
   "events_display": {
     "retreating": "retreating",
+    "retaliate": "Retaliate",
     "boat": "Boat",
     "alliance_request_status": "{name} {status} your alliance request",
     "alliance_accepted": "accepted",
