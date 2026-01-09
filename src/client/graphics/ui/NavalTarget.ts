@@ -1,10 +1,12 @@
 import { Cell, UnitType } from "src/core/game/Game";
 import { GameView, UnitView } from "src/core/game/GameView";
-import { TransformHandler } from "../TransformHandler";
+import { CAMERA_MAX_SCALE, TransformHandler } from "../TransformHandler";
 import { UIElement } from "./UIElement";
 
 const BASE_ALPHA = 0.9;
 const SHADOW_OFFSET_Y = 2;
+const TARGET_MAX_SCALE = 8;
+const TARGET_MIN_SCALE = 1.1;
 
 /**
  * Draw a simple zoom-aware target
@@ -31,6 +33,7 @@ export class Target implements UIElement {
     this.dashSize = Math.PI * this.outerRadius - 10;
     this.cell = new Cell(this.x + 0.5, this.y + 0.5);
   }
+
   render(ctx: CanvasRenderingContext2D, delta: number): boolean {
     this.lifeTime += delta;
 
@@ -42,7 +45,7 @@ export class Target implements UIElement {
     let t: number;
     if (this.ended) {
       // end animation
-      t = Math.max(0, 1 - this.lifeTime / this.animationDuration);
+      t = Math.max(0, 1 - this.animationElapsedTime / this.animationDuration);
     } else {
       t = 1; // No start fade feels more reactive
     }
@@ -51,8 +54,7 @@ export class Target implements UIElement {
     const screenPos = this.transformHandler.worldToScreenCoordinates(this.cell);
     screenPos.x = Math.round(screenPos.x);
     screenPos.y = Math.round(screenPos.y);
-    const transformScale = this.transformHandler.scale;
-    const scale = transformScale > 10 ? 1 + (transformScale - 10) / 10 : 1;
+    const scale = this.computeScale();
     this.offset += this.rotationSpeed * (delta / 1000);
 
     ctx.save();
@@ -99,6 +101,22 @@ export class Target implements UIElement {
     ctx.strokeStyle = `rgba(0,0,0,0.2)`;
     ctx.arc(x, y + SHADOW_OFFSET_Y, this.outerRadius * scale, 0, Math.PI * 2);
     ctx.stroke();
+  }
+
+  private computeScale(): number {
+    const transformScale = this.transformHandler.scale;
+    console.log(transformScale);
+    if (transformScale > TARGET_MAX_SCALE) {
+      return (
+        1 +
+        (transformScale - TARGET_MAX_SCALE) /
+          Math.max(1, CAMERA_MAX_SCALE - TARGET_MAX_SCALE)
+      );
+    }
+    if (transformScale < TARGET_MIN_SCALE) {
+      return transformScale / TARGET_MIN_SCALE;
+    }
+    return 1;
   }
 }
 

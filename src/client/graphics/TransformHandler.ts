@@ -11,6 +11,8 @@ import {
 export const GOTO_INTERVAL_MS = 16;
 export const CAMERA_MAX_SPEED = 15;
 export const CAMERA_SMOOTHING = 0.03;
+export const CAMERA_MAX_SCALE = 20;
+export const CAMERA_MIN_SCALE = 0.2;
 
 export class TransformHandler {
   public scale: number = 1.8;
@@ -233,7 +235,10 @@ export class TransformHandler {
     this.scale /= zoomFactor;
 
     // Clamp the scale to prevent extreme zooming
-    this.scale = Math.max(0.2, Math.min(20, this.scale));
+    this.scale = Math.max(
+      CAMERA_MIN_SCALE,
+      Math.min(CAMERA_MAX_SCALE, this.scale),
+    );
 
     const canvasRect = this.boundingRect();
     const canvasX = event.x - canvasRect.left;
