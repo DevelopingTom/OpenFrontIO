@@ -105,7 +105,6 @@ export class Target implements UIElement {
 
   private computeScale(): number {
     const transformScale = this.transformHandler.scale;
-    console.log(transformScale);
     if (transformScale > TARGET_MAX_SCALE) {
       return (
         1 +
